@@ -8,7 +8,7 @@ Different configurations of low-power modes will be tested:
 
 Real-time visualization of the board consumption (current, voltage, power and such) will be possible using the [Otii software](https://www.qoitech.com/software/) solution. 
 
-A first approach regarding the implementation of low-power modes will be to use Arduino IDE combined with STM32Cube[MX](https://www.st.com/en/development-tools/stm32cubemx.html) / [IDE] (https://www.st.com/en/development-tools/stm32cubeide.html).
+A first approach regarding the implementation of low-power modes will be to use Arduino IDE combined with STM32Cube[MX](https://www.st.com/en/development-tools/stm32cubemx.html) / [IDE](https://www.st.com/en/development-tools/stm32cubeide.html).
 *If no results are exploitable, we'll go with micro-Python / C.*
 The solution making the choice of configuration mode easier will be retained.
 
