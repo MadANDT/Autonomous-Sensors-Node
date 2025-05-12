@@ -1,0 +1,21 @@
+12:43:04 **** Incremental Build of configuration Debug for project SLEEP_WL55_1CPU ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_NUCLEO_64 -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32WL55xx -c -I../Core/Inc -I../Drivers/STM32WLxx_HAL_Driver/Inc -I../Drivers/STM32WLxx_HAL_Driver/Inc/Legacy -I../Drivers/BSP/STM32WLxx_Nucleo -I../Drivers/CMSIS/Device/ST/STM32WLxx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "SLEEP_WL55_1CPU.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\matte\Documents\ST_workspace\SLEEP_WL55_1CPU\STM32WL55JCIX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SLEEP_WL55_1CPU.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: SLEEP_WL55_1CPU.elf
+ 
+arm-none-eabi-size  SLEEP_WL55_1CPU.elf 
+arm-none-eabi-objdump -h -S SLEEP_WL55_1CPU.elf  > "SLEEP_WL55_1CPU.list"
+   text	   data	    bss	    dec	    hex	filename
+  21020	     64	   1912	  22996	   59d4	SLEEP_WL55_1CPU.elf
+Finished building: default.size.stdout
+ 
+Finished building: SLEEP_WL55_1CPU.list
+ 
+12:43:22 **** Incremental Build of configuration Debug for project SLEEP_WL55_1CPU ****
+make -j20 all 
+arm-none-eabi-size  SLEEP_WL55_1CPU.elf 
+   text	   data	    bss	    dec	    hex	filename
+  21020	     64	   1912	  22996	   59d4	SLEEP_WL55_1CPU.elf
+Finished building: default.size.stdout
+ 
