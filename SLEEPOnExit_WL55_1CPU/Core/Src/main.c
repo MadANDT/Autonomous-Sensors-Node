@@ -56,8 +56,6 @@ static void MX_TIM16_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//char textApp[] = "Test du mode basse conso. SLEEP sur WL55\r\n";
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	HAL_ResumeTick();
 
