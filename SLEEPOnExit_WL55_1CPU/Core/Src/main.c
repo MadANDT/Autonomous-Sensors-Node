@@ -64,23 +64,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	// Check which version of the timer triggered this callback and toggle LED
 	if (htim == &htim16){
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
-		/*if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)){ // blue LED is ON
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 1);
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 0);
-		} else {
-			if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_11)){ // red LED is ON
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 0);
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 1);
-			} else {
-				if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9)){ // green LED is ON
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 0);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 0);
-				}
-			}
-		}*/
 	}
 
 	HAL_SuspendTick();
@@ -303,30 +286,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-// Callback: timer has reset
-/*void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	// Check which version of the timer triggered this callback and toggle LED
-	if (htim == &htim16){
-		if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)){ // blue LED is ON
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 1);
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 0);
-		} else {
-			if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_11)){ // red LED is ON
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 0);
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 1);
-			} else {
-				if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9)){ // green LED is ON
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 0);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 0);
-				}
-			}
-		}
-	}
-}
-*/
 
 /* USER CODE END 4 */
 
