@@ -100,7 +100,7 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim16);
-  //HAL_PWR_EnableSleepOnExit();
+  HAL_PWR_EnableSleepOnExit();
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
   /* USER CODE END 2 */
 
