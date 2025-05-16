@@ -61,8 +61,10 @@ static void MX_USART2_UART_Init(void);
 }*/
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	HAL_ResumeTick();
+	HAL_ResumeTick(); // MCU wakes up from sleep mode
+
 	//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);	// Toggle the blue LED pin if needed.
+
 	printf("Réveil par pression du Boutton 1\r\n");
 }
 /* USER CODE END 0 */
@@ -108,10 +110,16 @@ int main(void)
   {
 	  printf("Exécution de la boucle While\r\n");
 	  printf("le µCU entre en veille normale via WFE\r\n\r\n");
-	  //__HAL_RCC_USART2_CLK_SLEEP_DISABLE(); // Clock-gating the USART2 peripheral
+	  __HAL_RCC_USART2_CLK_SLEEP_DISABLE(); // Clock-gating the USART2 peripheral
 
 	  HAL_SuspendTick();
 	  HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFE);
+    
+    /* ####----####
+	   * MCU is asleep
+	   * ####----####
+	   */
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
