@@ -102,12 +102,18 @@ int main(void)
   {
 	  printf("Exécution de la boucle While\r\n");
 	  printf("Le µCU entre en veille normale via WFE - type event\r\n\r\n");
+
 	  __HAL_RCC_USART2_CLK_SLEEP_DISABLE(); // Clock-gating the USART2 peripheral
 
 	  HAL_SuspendTick();
 	  HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFE);
 
-	  HAL_ResumeTick();
+    /* ####----####
+	   * MCU is asleep
+	   * ####----####
+	   */
+
+	  HAL_ResumeTick(); // MCU wakes up from sleep mode
 	  printf("Réveil par pression du Boutton 1\r\n");
     /* USER CODE END WHILE */
 

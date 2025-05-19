@@ -61,8 +61,10 @@ int __io_putchar(int ch){
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	HAL_ResumeTick();
+	HAL_ResumeTick(); // MCU wakes up from sleep mode
+
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+
 	printf("Réveil par pression du Boutton 1\r\n");
 }
 
@@ -113,9 +115,13 @@ int main(void)
 	  __HAL_RCC_USART2_CLK_SLEEP_DISABLE(); // Clock-gating the USART2 peripheral
 
 	  HAL_SuspendTick();
+
 	  HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
 
-	  //HAL_ResumeTick();
+    /* ####----####
+ 	   * MCU is asleep
+ 	   * ####----####
+ 	   */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

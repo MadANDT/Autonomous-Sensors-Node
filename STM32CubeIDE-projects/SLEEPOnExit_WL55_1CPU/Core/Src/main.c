@@ -57,7 +57,7 @@ static void MX_TIM16_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	HAL_ResumeTick();
+	HAL_ResumeTick(); // MCU wakes up from sleep mode
 
 	// Check which version of the timer triggered this callback and toggle LED
 	if (htim == &htim16){
@@ -65,6 +65,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	}
 
 	HAL_SuspendTick();
+
+  /* ####----####----####----####----####
+	  * MCU will sleep when exiting this ISR
+	  * ####----####----####----####----####
+	  */
 }
 /* USER CODE END 0 */
 
