@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  0001cddc  00000000  00000000  00017b2b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000e799  00000000  00000000  00034907  2**0
+ 17 .debug_line   0000e672  00000000  00000000  00034907  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000b20c8  00000000  00000000  000430a0  2**0
+ 18 .debug_str    000b20c6  00000000  00000000  00042f79  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000f5168  2**0
+ 19 .comment      00000043  00000000  00000000  000f503f  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00004764  00000000  00000000  000f51ac  2**2
+ 20 .debug_frame  00004764  00000000  00000000  000f5084  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000084  00000000  00000000  000f9910  2**0
+ 21 .debug_line_str 00000082  00000000  00000000  000f97e8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -463,12 +463,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
  8000520:	af00      	add	r7, sp, #0
  8000522:	4603      	mov	r3, r0
  8000524:	80fb      	strh	r3, [r7, #6]
-	HAL_ResumeTick();
+	HAL_ResumeTick(); // MCU wakes up from sleep mode
  8000526:	f000 fb41 	bl	8000bac <HAL_ResumeTick>
+
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
  800052a:	f44f 4100 	mov.w	r1, #32768	@ 0x8000
  800052e:	4805      	ldr	r0, [pc, #20]	@ (8000544 <HAL_GPIO_EXTI_Callback+0x28>)
  8000530:	f000 fdcd 	bl	80010ce <HAL_GPIO_TogglePin>
+
 	printf("Réveil par pression du Boutton 1\r\n");
  8000534:	4804      	ldr	r0, [pc, #16]	@ (8000548 <HAL_GPIO_EXTI_Callback+0x2c>)
  8000536:	f003 f8e3 	bl	8003700 <puts>
@@ -536,6 +538,7 @@ int main(void)
 
 	  HAL_SuspendTick();
  800057a:	f000 fb09 	bl	8000b90 <HAL_SuspendTick>
+
 	  HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
  800057e:	2101      	movs	r1, #1
  8000580:	2000      	movs	r0, #0

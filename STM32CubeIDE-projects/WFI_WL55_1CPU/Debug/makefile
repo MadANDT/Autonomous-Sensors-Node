@@ -60,8 +60,8 @@ all: main-build
 main-build: WFI_WL55_1CPU.elf secondary-outputs
 
 # Tool invocations
-WFI_WL55_1CPU.elf WFI_WL55_1CPU.map: $(OBJS) $(USER_OBJS) D:\Travaux_scolaires\EI4_Polytech_Sorbonne\S8\PSE_IoT\Workspace\CubeIDE\WFI_WL55_1CPU\STM32WL55JCIX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "WFI_WL55_1CPU.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Travaux_scolaires\EI4_Polytech_Sorbonne\S8\PSE_IoT\Workspace\CubeIDE\WFI_WL55_1CPU\STM32WL55JCIX_FLASH.ld" --specs=nosys.specs -Wl,-Map="WFI_WL55_1CPU.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+WFI_WL55_1CPU.elf WFI_WL55_1CPU.map: $(OBJS) $(USER_OBJS) C:\Users\stagiaire\Documents\ASN_depotGit\draft\STM32CubeIDE-projects\WFI_WL55_1CPU\STM32WL55JCIX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "WFI_WL55_1CPU.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\stagiaire\Documents\ASN_depotGit\draft\STM32CubeIDE-projects\WFI_WL55_1CPU\STM32WL55JCIX_FLASH.ld" --specs=nosys.specs -Wl,-Map="WFI_WL55_1CPU.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
