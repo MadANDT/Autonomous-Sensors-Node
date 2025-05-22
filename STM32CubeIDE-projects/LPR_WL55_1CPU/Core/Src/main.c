@@ -404,7 +404,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	// If user button 1 (UB1, on PA0) is pressed,
 	// the according text is displayed
-	if (GPIO_Pin == UB1_Pin){ printf("Sortie par pression du Boutton 1\r\n");
+	if (GPIO_Pin == UB1_Pin){ printf("Sortie par pression du Bouton 1\r\n");
 		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15); delay(200);
 		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15); delay(200);
 		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15); delay(200);
@@ -413,7 +413,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	// If user button 2 (UB2, on PA1) is pressed,
 	// the according text is displayed
-	if (GPIO_Pin == UB2_Pin){ printf("Sortie par pression du Boutton 2\r\n");
+	if (GPIO_Pin == UB2_Pin){ printf("Sortie par pression du Bouton 2\r\n");
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15); delay(200);
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15); delay(200);
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9); delay(200);
@@ -422,7 +422,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	// If user button 3 (UB3, on PC6) is pressed,
 	// the according text is displayed
-	if (GPIO_Pin == UB3_Pin){ printf("Sortie par pression du Boutton 3\r\n");
+	if (GPIO_Pin == UB3_Pin){ printf("Sortie par pression du Bouton 3\r\n");
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9); delay(200);
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9); delay(200);
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9); delay(200);

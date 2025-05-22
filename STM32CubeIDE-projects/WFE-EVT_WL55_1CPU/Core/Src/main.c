@@ -114,7 +114,7 @@ int main(void)
 	   */
 
 	  HAL_ResumeTick(); // MCU wakes up from sleep mode
-	  printf("Réveil par pression du Boutton 1\r\n");
+	  printf("Réveil par pression du Bouton 1\r\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

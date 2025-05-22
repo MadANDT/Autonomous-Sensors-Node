@@ -471,7 +471,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
  800052e:	4805      	ldr	r0, [pc, #20]	@ (8000544 <HAL_GPIO_EXTI_Callback+0x28>)
  8000530:	f000 fdcd 	bl	80010ce <HAL_GPIO_TogglePin>
 
-	printf("Réveil par pression du Boutton 1\r\n");
+	printf("Réveil par pression du Bouton 1\r\n");
  8000534:	4804      	ldr	r0, [pc, #16]	@ (8000548 <HAL_GPIO_EXTI_Callback+0x2c>)
  8000536:	f003 f8e3 	bl	8003700 <puts>
 }

@@ -1304,7 +1304,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	// If user button 1 (UB1, on PA0) is pressed,
 	// the according text is displayed
-	if (GPIO_Pin == UB1_Pin){ printf("Sortie par pression du Boutton 1\r\n");
+	if (GPIO_Pin == UB1_Pin){ printf("Sortie par pression du Bouton 1\r\n");
  8000a6c:	88fb      	ldrh	r3, [r7, #6]
  8000a6e:	2b01      	cmp	r3, #1
  8000a70:	d122      	bne.n	8000ab8 <HAL_GPIO_EXTI_Callback+0x5c>
@@ -1338,7 +1338,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	// If user button 2 (UB2, on PA1) is pressed,
 	// the according text is displayed
-	if (GPIO_Pin == UB2_Pin){ printf("Sortie par pression du Boutton 2\r\n");
+	if (GPIO_Pin == UB2_Pin){ printf("Sortie par pression du Bouton 2\r\n");
  8000ab8:	88fb      	ldrh	r3, [r7, #6]
  8000aba:	2b02      	cmp	r3, #2
  8000abc:	d122      	bne.n	8000b04 <HAL_GPIO_EXTI_Callback+0xa8>
@@ -1372,7 +1372,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	// If user button 3 (UB3, on PC6) is pressed,
 	// the according text is displayed
-	if (GPIO_Pin == UB3_Pin){ printf("Sortie par pression du Boutton 3\r\n");
+	if (GPIO_Pin == UB3_Pin){ printf("Sortie par pression du Bouton 3\r\n");
  8000b04:	88fb      	ldrh	r3, [r7, #6]
  8000b06:	2b40      	cmp	r3, #64	@ 0x40
  8000b08:	d122      	bne.n	8000b50 <HAL_GPIO_EXTI_Callback+0xf4>

@@ -65,7 +65,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
 
-	printf("Réveil par pression du Boutton 1\r\n");
+	printf("Réveil par pression du Bouton 1\r\n");
 }
 
 /* USER CODE END 0 */
