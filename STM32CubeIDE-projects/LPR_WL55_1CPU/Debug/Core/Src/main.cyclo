@@ -1,0 +1,15 @@
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_pwr.h:1962:26:LL_PWR_IsActiveFlag_REGLPS	2
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_rcc.h:3035:26:LL_RCC_IsActiveFlag_HPRE	2
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:449:22:LL_AHB2_GRP1_EnableClock	1
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:1468:22:LL_APB2_GRP1_DisableClockSleep	1
+../Core/Src/main.c:64:5:__io_putchar	1
+../Core/Src/main.c:79:6:Divide_HCLK1_By_X	21
+../Core/Src/main.c:117:6:Enter_LowPowerRunMode	2
+../Core/Src/main.c:146:6:Exit_LowPowerRunMode	1
+../Core/Src/main.c:163:6:delay	2
+../Core/Src/main.c:177:5:main	1
+../Core/Src/main.c:234:6:SystemClock_Config	3
+../Core/Src/main.c:283:13:MX_USART2_UART_Init	5
+../Core/Src/main.c:331:13:MX_GPIO_Init	1
+../Core/Src/main.c:395:6:HAL_GPIO_EXTI_Callback	4
+../Core/Src/main.c:434:6:Error_Handler	1
