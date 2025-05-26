@@ -64,7 +64,7 @@ int __io_putchar(int ch){
 }
 
 
-/** @brief Makes the CPU into STOP0 mode,
+/** @brief Makes the CPU go into STOP0 mode,
   * according to the datasheet guidance.
   * We are waiting on Event, particularly on a pending interruption
   * @retval None
