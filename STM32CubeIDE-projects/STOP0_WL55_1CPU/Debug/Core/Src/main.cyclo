@@ -1,0 +1,11 @@
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:449:22:LL_AHB2_GRP1_EnableClock	1
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:1257:22:LL_APB1_GRP1_DisableClockSleep	1
+../Core/Src/main.c:62:5:__io_putchar	1
+../Core/Src/main.c:70:6:delay	2
+../Core/Src/main.c:84:6:Enter_STOP0Mode_OnWFE	1
+../Core/Src/main.c:121:6:Exit_STOP0Mode_OnWFE	5
+../Core/Src/main.c:156:5:main	1
+../Core/Src/main.c:216:6:SystemClock_Config	3
+../Core/Src/main.c:258:13:MX_USART2_UART_Init	5
+../Core/Src/main.c:306:13:MX_GPIO_Init	1
+../Core/Src/main.c:357:6:Error_Handler	1
