@@ -104,7 +104,7 @@ void Enter_STOP0Mode_OnWFE(void){
 	// Suspend the tick to prevent the SysTick interrupt every 1 ms
 	HAL_SuspendTick();
 
-	// Enter the STOP0 mode, waiting for an event: pending interrupt
+	// Enter the STOP0 mode, waiting for an event
 	HAL_PWREx_EnterSTOP0Mode(PWR_SLEEPENTRY_WFE);
 	/* ####----####----####----####
 	 * MCU is asleep in STOP0 mode
