@@ -12,16 +12,7 @@
 #include "stm32wlxx_hal.h" // or your relevant HAL header
 #include <stdio.h>
 
-// Define modes using enum
-typedef enum {
-    MODE_RUN = 0,
-    MODE_LPRUN = 1,
-    MODE_STOP1 = 2
-} PowerMode;
-
 extern UART_HandleTypeDef huart2;
-extern uint8_t currentMode;
-extern uint32_t UB1_Pin, UB2_Pin, UB3_Pin;
 
 /** @brief  Redirect the output of printf
   * @retval int
@@ -42,7 +33,7 @@ void delay(uint32_t ms);
   * and by default, any unusual value will not divide).
   * @retval None
  */
-int Divide_HCLK1_By(uint16_t dividerX);
+void Divide_HCLK1_By(uint16_t dividerX);
 
 /** @brief Makes the CPU goes into low power run mode (LPRun),
   * according to the datasheet guidance. HSE32 is not used,
@@ -67,20 +58,6 @@ void Exit_LowPowerRunMode(uint8_t newHCLKFreq);
   * @retval None
   */
 void Enter_STOP1Mode_OnWFI(void);
-
-/* No need of an exit function from STOP1 mode since we're waiting on interrupt.
-    The code execution resumes from the corresponding interrupt callback and then 
-    back at the start of the main while loop.
-*/
-
-/** @brief User-defined ISR when pressing any of the buttons,
-  * text is displayed and LEDs are blinking.
-  * Power mode is switched according to the button pressed and the current mode `currentMode`.
-  * @param GPIO_Pin: Pin number that triggered the interrupt
-  * @note  This function is called by the HAL when an external interrupt occurs.
-  * @retval None
-  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 
 

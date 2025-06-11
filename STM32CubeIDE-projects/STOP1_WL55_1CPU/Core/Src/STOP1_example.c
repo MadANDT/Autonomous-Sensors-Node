@@ -6,6 +6,8 @@
   ******************************************************************************
   */
 
+// Necessary includes
+#include "./../Inc/main.h"
 #include "./../Inc/STOP1_example.h"
 
 /** @brief  Redirect the output of printf to USART2
@@ -77,9 +79,6 @@ void Divide_HCLK1_By(uint16_t dividerX){
   * @retval None
   */
 void Enter_LowPowerRunMode(void){
-    // Set the current mode to LPRUN
-    currentMode = MODE_LPRUN;
-
 	// 1. set the FPDR bit in PWR_CR1.
 	HAL_PWREx_EnableFlashPowerDown(PWR_FLASHPD_LPRUN);
 
@@ -119,13 +118,7 @@ void Exit_LowPowerRunMode(uint8_t newHCLKFreq){
 	// So we can take one of the nine lower values, 1 to 16.
 	Divide_HCLK1_By(newHCLKFreq);
 	// (HSE32 is not used here, so we skip this optionnal step.)
-
-	// 4. Reinitialize the USART2 peripheral (since changing the HCLK frequency
-	// impacts the related peripherals, such as USART2).
-	MX_USART2_UART_Init();
 }
-
-
 
 /** @brief Makes the CPU go into STOP1 mode,
   * according to the datasheet guidance.
@@ -133,9 +126,6 @@ void Exit_LowPowerRunMode(uint8_t newHCLKFreq){
   * @retval None
   */
 void Enter_STOP1Mode_OnWFI(void){
-    // Set the current mode to STOP1
-    currentMode = MODE_STOP1;
-    
     /* All EXTI line pending bits (in EXTI pending register
 	 * (EXTI_PR1), and EXTI pending register (EXTI_PR2)),
 	 * and the peripheral flags generating wake-up interrupts must be cleared.
@@ -163,96 +153,4 @@ void Enter_STOP1Mode_OnWFI(void){
 	 * MCU is asleep in STOP1 mode
 	 * ####----####----####----####
 	 */
-}
-
-/* No need of an exit function from STOP1 mode since we're waiting on interrupt.
-    The code execution resumes from the corresponding interrupt callback and then 
-    back at the start of the main while loop.
-*/
-
-/** @brief User-defined ISR when pressing any of the buttons,
-  * text is displayed and LEDs are blinking.
-  * Power mode is switched according to the button pressed and the current mode `currentMode`.
-  * @param GPIO_Pin: Pin number that triggered the interrupt
-  * @note  This function is called by the HAL when an external interrupt occurs.
-  * @retval None
-  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-    // Cases differ depending on the button pressed
-
-    /* If user button 1 (UB1, on PA0) is pressed,
-     * switch mode to LPRun occurs only if the current mode is STOP1.
-     */ 
-	if (GPIO_Pin == UB1_Pin){ 
-        printf("Pression du Bouton 1 détectée.\r\n");
-        // If we are in STOP1 mode, switch to LPRun mode
-        if (currentMode == MODE_STOP1){
-            /* As we wake up from STOP1 mode, we need
-             * to resume the tick to allow SysTick interrupt.
-             */ HAL_ResumeTick();
-            
-            printf("Passage en mode LPRun.\r\n");
-            // Launch blue LED sequence (3 quick blinks)
-            for (int _ = 0; _ < 6; _++){
-                HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15); 
-                delay(100);
-            }
-            // Switch to LPRun mode
-            currentMode = MODE_LPRUN;
-            Enter_LowPowerRunMode();
-        } else {
-            printf("\tLe mode actuel n'est pas STOP1, pas de changement de mode.\r\n");
-        }
-	}
-
-    /* If user button 2 (UB2, on PA1) is pressed,
-     * switch mode to STOP1 occurs only if the current mode is LPRun.
-     */ 
-	if (GPIO_Pin == UB2_Pin){ 
-        printf("Pression du Bouton 2 détectée.\r\n");
-        // If we are in LPRun mode, switch to STOP1 mode
-        if (currentMode == MODE_LPRUN){
-            printf("Passage en mode STOP1.\r\n");
-            // Exit LPRun mode, set HCLK1 to 16 MHz
-            Exit_LowPowerRunMode(1); 
-            // Launch green LED sequence (3 quick blinks)
-            for (int _ = 0; _ < 6; _++){
-                HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9); 
-                delay(100);
-            }
-            // Switch to STOP1 mode
-            currentMode = MODE_STOP1;
-            Enter_STOP1Mode_OnWFI();
-        } else {
-            printf("\tLe mode actuel n'est pas LPRun, pas de changement de mode.\r\n");
-        }
-	}
-    
-    /* If user button 3 (UB3, on PC6) is pressed,
-     * switch mode to Run occurs only if the current mode is LPRun or STOP1.
-     */ 
-	if (GPIO_Pin == UB3_Pin){ 
-        printf("Pression du Bouton 3 détectée.\r\n");
-        // If we are in LPRun/STOP1 mode, switch to Run mode
-        if (currentMode != MODE_RUN){
-            printf("Passage en mode Run.\r\n");
-            // If we are in LPRun mode, exit it and set HCLK1 to 16 MHz
-            if (currentMode == MODE_LPRUN){
-                Exit_LowPowerRunMode(1); 
-            }
-            // If we are in STOP1 mode, resume the tick
-            if (currentMode == MODE_STOP1){
-                HAL_ResumeTick();
-            }
-            // Launch red LED sequence (2 long blinks)
-            for (int _ = 0; _ < 4; _++){
-                HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11); 
-                delay(1000);
-            }
-            // Switch to Run mode
-            currentMode = MODE_RUN;
-        } else {
-            printf("\tLe mode actuel est Run, pas de changement de mode.\r\n");
-        }
-	}
 }

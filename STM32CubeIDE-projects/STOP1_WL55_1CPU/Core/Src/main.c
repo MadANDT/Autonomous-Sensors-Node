@@ -44,7 +44,15 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint8_t currentMode = MODE_RUN; // Initialize current mode to RUN
+// Define modes using enum
+typedef enum {
+    MODE_RUN = 0,
+    MODE_LPRUN = 1,
+    MODE_STOP1 = 2
+} PowerMode;
+uint8_t currentMode = MODE_RUN; 				// Initialize current mode to RUN
+volatile uint8_t button_pressed = 0; 			// Flag waiting for a button reset
+volatile uint16_t last_button_pin = UB3_Pin;	// Flag on last button pressed set to UB3_Pin (Run)
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,22 +105,20 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
     printf("\r\n\r\nTest d'une appli mode veille profonde sur STM32.\r\n");
+    printf("Les différents modes testés sont:\r\n");
+    printf("\tRUN = 0, LPRUN = 1, STOP1 = 2\r\n");
   while (1)
   {
-    printf("Exécution de la boucle While.\r\n");
-	  printf("Le µCU entre en mode STOP1 via WFI par défaut.\r\n\r\n");
+	  button_pressed = 0; // Reset flag before waiting
+	  printf("Exécution de la boucle While.\r\n");
+	  printf("Modes disponibles:\r\n");
+	  printf("\tRUN = 0, LPRUN = 1, STOP1 = 2\r\n");
+	  printf("\tMode actuel: %d\r\n\r\n", currentMode);
 
-	  // Clock-gating the USART2 peripheral
-	  __HAL_RCC_USART2_CLK_SLEEP_DISABLE();
+	  while (button_pressed == 0){}
 
-    // Set the current mode to STOP1
-    currentMode = MODE_STOP1;
+	  Switch_Mode(last_button_pin);
 
-	  Enter_STOP1Mode_OnWFI();
-	  /* ####----####----####----####
-	   * MCU is asleep in STOP0 mode
-	   * ####----####----####----####
-	   */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -274,6 +280,171 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/** @brief User-defined ISR when pressing any of the buttons,
+  * text is displayed and LEDs are blinking.
+  * Power mode is switched according to the button pressed and
+  * `currentMode` is updated.
+  * @param GPIO_Pin: Pin number that triggered the interrupt
+  * @note  This function is called by the HAL when an external interrupt occurs.
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	// Update our user defined flags
+	button_pressed = 1;
+	last_button_pin = GPIO_Pin;
+    // Cases differ depending on the button pressed
+
+	// Actions to do if we are currently in STOP1 mode
+	if (currentMode == MODE_STOP1 || currentMode == MODE_LPRUN){
+		if (currentMode == MODE_STOP1){
+			// Resume the SysTick increment
+			HAL_ResumeTick();
+		}
+		// (Re)Initialize the peripherals
+		HAL_Init(); 			// all peripherals, Flash interface and SysTick
+		MX_GPIO_Init();			// GPIO
+		MX_USART2_UART_Init(); 	// USART2
+	}
+    /* If user button 1 (UB1, on PA0) is pressed,
+     * we are currently in STOP1 mode, so no change.
+     */
+	if (GPIO_Pin == UB1_Pin){
+		last_button_pin = UB1_Pin;
+        // Nothing else to do here.
+	}
+
+	/* If user button 2 (UB2, on PA1) is pressed,
+	 * switch mode to LPRun mode.
+	 */
+	if (GPIO_Pin == UB2_Pin){
+		printf("Pression du Bouton 2 détectée.\r\n");
+		printf("Le µCU entrera en mode LPRun.\r\n");
+		last_button_pin = UB2_Pin;
+		// Set the current mode to STOP1
+		//currentMode = MODE_LPRUN;
+	}
+
+	/* If user button 3 (UB3, on PC6) is pressed,
+	 * switch mode to Run mode.
+	 */
+	if (GPIO_Pin == UB3_Pin){
+		printf("Pression du Bouton 3 détectée.\r\n");
+		printf("Le µCU entrera en mode Run.\r\n");
+		last_button_pin = UB3_Pin;
+		// Set the current mode to STOP1
+		//currentMode = MODE_RUN;
+	}
+}
+
+/** @brief Makes the CPU change its power mode,
+  * between the Run, LPRun and STOP1,
+  * according to the button pressed.
+  * @param GPIO_Pin may take different values, each leading to a specific mode:
+  * 	GPIO_Pin_0 || UB1_Pin sets the CPU to STOP1 mode
+  * 	GPIO_Pin_1 || UB2_Pin sets the CPU to LPRun mode
+  * 	GPIO_Pin_6 || UB3_Pin sets the CPU to Run mode
+  * @retval None
+  */
+void Switch_Mode(uint16_t GPIO_Pin){
+	button_pressed = 1;
+	// Cases differ depending on the button pressed
+
+	/* If user button 1 (UB1, on PA0) is pressed,
+	 * switch mode to STOP1 mode.
+	 */
+	if (GPIO_Pin == UB1_Pin){
+		//printf("Pression du Bouton 1 détectée.\r\n");
+		// Launch blue LED sequence (3 quick blinks)
+		for (int _ = 0; _ < 6; _++){
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+			delay(50);
+		}
+
+		// If we are in LPRun or Run mode, switch to STOP1 mode
+		if (currentMode == MODE_RUN || currentMode == MODE_LPRUN){
+			// Procedure to enter STOP1 mode is the same, but exiting LPRun is an extra step
+			if (currentMode == MODE_LPRUN){
+				// Exit first from LPRun, working back at 16 MHz
+				Exit_LowPowerRunMode(1);
+				// Reset the USART2 peripheral, as HCLK1 frequency is now different
+				MX_USART2_UART_Init();
+			}
+			printf("Le µCU entre en mode STOP1 via WFI.\r\n");
+			// Suspend the SysTick increment
+			HAL_SuspendTick();
+			// Clock-gating the USART2 peripheral
+			__HAL_RCC_USART2_CLK_SLEEP_DISABLE();
+			// Set the current mode to STOP1
+			currentMode = MODE_STOP1;
+			Enter_STOP1Mode_OnWFI();
+			/* ####----####----####----####
+			 * MCU is asleep in STOP1 mode
+			 * ####----####----####----####
+			 */
+		}
+	}
+
+	/* If user button 2 (UB2, on PA1) is pressed,
+	 * switch mode to LPRun mode.
+	 */
+	if (GPIO_Pin == UB2_Pin){
+		//printf("Pression du Bouton 2 détectée.\r\n");
+		// Launch green LED sequence (3 quick blinks)
+		for (int _ = 0; _ < 6; _++){
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
+			delay(50);
+		}
+
+		// If we are in Run or STOP1 mode, switch to LPRun mode
+		if (currentMode == MODE_RUN || currentMode == MODE_STOP1){
+			// Procedure to enter LPRun mode is the same, but exiting STOP1 requires extra steps
+			if (currentMode == MODE_STOP1){
+				// Resume the SysTick increment
+				HAL_ResumeTick();
+				// (Re)Initialize the peripherals
+				HAL_Init(); 			// all peripherals, Flash interface and SysTick
+				MX_GPIO_Init();			// GPIO
+			}
+			// Reset the USART2 peripheral
+			MX_USART2_UART_Init();
+			printf("Le µCU entre en mode LPRun.\r\n\r\n");
+			// Set the current mode to LPRun
+			currentMode = MODE_LPRUN;
+			// Enter LPRun mode
+			Enter_LowPowerRunMode();
+		}
+	}
+
+	/* If user button 3 (UB3, on PC6) is pressed,
+	 * switch mode to Run mode.
+	 */
+	if (GPIO_Pin == UB3_Pin){
+		//printf("Pression du Bouton 3 détectée.\r\n");
+		// Launch red LED sequence (2 slow blinks)
+		for (int _ = 0; _ < 4; _++){
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
+			delay(200);
+		}
+
+		// If we are in LPRun or STOP1 mode, switch to Run mode
+		if (currentMode == MODE_LPRUN || currentMode == MODE_STOP1){
+			if (currentMode == MODE_LPRUN){
+				// Exit first from LPRun, working back at 16 MHz
+				Exit_LowPowerRunMode(1);
+			} if (currentMode == MODE_STOP1){
+				// Resume the SysTick increment
+				HAL_ResumeTick();
+			}
+			// (Re)Initialize the peripherals
+			HAL_Init(); 			// all peripherals, Flash interface and SysTick
+			MX_GPIO_Init();			// GPIO
+			MX_USART2_UART_Init(); 	// USART2
+			printf("Le µCU entre en mode Run.\r\n\r\n");
+			// Set the current mode to STOP1
+			currentMode = MODE_RUN;
+		}
+	}
+}
 
 /* USER CODE END 4 */
 
