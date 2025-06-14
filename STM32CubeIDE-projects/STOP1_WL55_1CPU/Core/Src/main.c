@@ -366,6 +366,8 @@ void Switch_Mode(void){
 			__HAL_RCC_USART2_CLK_SLEEP_DISABLE();
 			// Set the current mode to STOP1
 			currentMode = MODE_STOP1;
+      // Enter STOP1 mode
+      Enter_STOP1Mode_OnWFI();
 		}
 	}
 	/* If user button 2 (UB2, on PA1) was pressed,
