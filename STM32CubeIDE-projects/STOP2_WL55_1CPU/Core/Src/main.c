@@ -44,7 +44,7 @@ RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN PV */
 uint16_t currentLED_Pin = BLED_Pin;
-uint16_t blinkLength = 0x0FA0;
+uint16_t sleepDuration = 0x0FA0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -101,16 +101,23 @@ int main(void)
 	  HAL_GPIO_WritePin(GPIOB, currentLED_Pin, GPIO_PIN_SET);
 	  HAL_Delay(1000);
 	  HAL_GPIO_WritePin(GPIOB, currentLED_Pin, GPIO_PIN_RESET);
-
-
+	  // Suspend SysTick increment
 	  HAL_SuspendTick();
-	  HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, blinkLength, RTC_WAKEUPCLOCK_RTCCLK_DIV16, 0);
+	  // Set RTC interrupt as our wake-up signal
+	  HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, sleepDuration, RTC_WAKEUPCLOCK_RTCCLK_DIV16, 0);
 
 	  /* Enter STOP 2 mode */
 	  HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
-	  HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-	  SystemClock_Config();
+	  /* ####----####----####----####
+	   * MCU is asleep in STOP2 mode
+	   * ####----####----####----####
+	   */
 
+	  // Dectivate wake-up timer
+	  HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
+	  // Reset System clock configuration, as STOP2 blocks most of the clocks
+	  SystemClock_Config();
+	  // Resume the SysTick increment
 	  HAL_ResumeTick();
     /* USER CODE END WHILE */
 
@@ -275,31 +282,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-/* @brief User-defined callback function on RTC alarm A,
- * which toggles the BLED_Pin every second.
- * @param hrtc: pointer to RTC_HandleTypeDef variable
- * @retval None
- */
-/*void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
-  RTC_AlarmTypeDef sAlarm;
-  HAL_RTC_GetAlarm(hrtc, &sAlarm, RTC_ALARM_A, FORMAT_BIN);
-  if (sAlarm.AlarmTime.Seconds > 58) {
-    sAlarm.AlarmTime.Seconds = 0;
-  } else {
-    sAlarm.AlarmTime.Seconds = sAlarm.AlarmTime.Seconds + 1;
-  }
-    while (HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN) != HAL_OK){}
-    HAL_GPIO_TogglePin(GPIOB, BLED_Pin);
-}*/
-
 /** @brief User-defined ISR when pressing button UB1,
   * the next LED to blink changes in this order: blue, green, red, blue, etc.
   * The duration of the STOP2 mode updates as well:
   * 2 seconds when blue LED is blinking,
   * 4 seconds when green LED is blinking,
   * 6 seconds when red LED is blinking.
-  * `currentLED_Pin` and `blinkLength` are updated here.
+  * `currentLED_Pin` and `sleepDuration` are updated here.
   * @param GPIO_Pin: Pin number that triggered the interrupt
   * @note  This function is called by the HAL when an external interrupt occurs.
   * @retval None
@@ -309,26 +298,25 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (currentLED_Pin == BLED_Pin){
 		/* Wake up clock counter updates to 4 seconds,
 		 * which corresponds to 0x1F40.
-		 */ blinkLength = 0x1F40;
+		 */ sleepDuration = 0x1F40;
 		// Change blinking LED to green LED
 		HAL_GPIO_WritePin(GPIOB, BLED_Pin, 0);
 		currentLED_Pin = GLED_Pin;
 	} else if (currentLED_Pin == GLED_Pin){
 		/* Wake up clock counter updates to 6 seconds,
 		 * which corresponds to 0x2EE0.
-		 */ blinkLength = 0x2EE0;
+		 */ sleepDuration = 0x2EE0;
 		// Change blinking LED to red LED
 		 HAL_GPIO_WritePin(GPIOB, GLED_Pin, 0);
 		 currentLED_Pin = RLED_Pin;
 	} else if (currentLED_Pin == RLED_Pin){
 		/* Wake up clock counter goes back to 2 seconds,
 		 * which corresponds to 0x0FA0.
-		 */ blinkLength = 0x0FA0;
+		 */ sleepDuration = 0x0FA0;
 		// Change blinking LED to blue LED
 		HAL_GPIO_WritePin(GPIOB, RLED_Pin, 0);
 		currentLED_Pin = BLED_Pin;
 	}
-
 }
 /* USER CODE END 4 */
 

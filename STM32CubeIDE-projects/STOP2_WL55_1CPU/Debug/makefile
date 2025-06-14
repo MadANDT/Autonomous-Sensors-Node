@@ -60,8 +60,8 @@ all: main-build
 main-build: STOP2_WL55_1CPU.elf secondary-outputs
 
 # Tool invocations
-STOP2_WL55_1CPU.elf STOP2_WL55_1CPU.map: $(OBJS) $(USER_OBJS) C:\Users\stagiaire\Documents\ST_workspace\STOP2_WL55_1CPU\STM32WL55JCIX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STOP2_WL55_1CPU.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\stagiaire\Documents\ST_workspace\STOP2_WL55_1CPU\STM32WL55JCIX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STOP2_WL55_1CPU.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STOP2_WL55_1CPU.elf STOP2_WL55_1CPU.map: $(OBJS) $(USER_OBJS) D:\Travaux_scolaires\EI4_Polytech_Sorbonne\stage\content\ASN_depotGit\draft\STM32CubeIDE-projects\STOP2_WL55_1CPU\STM32WL55JCIX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STOP2_WL55_1CPU.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Travaux_scolaires\EI4_Polytech_Sorbonne\stage\content\ASN_depotGit\draft\STM32CubeIDE-projects\STOP2_WL55_1CPU\STM32WL55JCIX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STOP2_WL55_1CPU.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
