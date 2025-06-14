@@ -664,3 +664,4 @@
 2025-06-14 18:26:33,173 [WARN] IP:2250 - OutPut3 not found: check if there is a RefParameter without a condition.
 2025-06-14 18:26:33,176 [WARN] IP:2250 - BinMixBcdU not found: check if there is a RefParameter without a condition.
 2025-06-14 18:26:33,176 [WARN] IP:2250 - SSRU_Underflow_Interrupt not found: check if there is a RefParameter without a condition.
+2025-06-14 20:14:00,559 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 

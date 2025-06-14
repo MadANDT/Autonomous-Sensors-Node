@@ -113,7 +113,7 @@ int main(void)
 	   * ####----####----####----####
 	   */
 
-	  // Dectivate wake-up timer
+	  // Deactivate wake-up timer
 	  HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
 	  // Reset System clock configuration, as STOP2 blocks most of the clocks
 	  SystemClock_Config();
