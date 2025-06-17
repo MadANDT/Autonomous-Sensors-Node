@@ -21,10 +21,9 @@ All there is to know for now (list of **This must ...**):
 - a wide variety of sensor types (temperature, humidity, light intensity, etc.) must be usable with our system.
 <br><br>
 The current structure of this project is as follows.<br>
-Each low power mode:
-* has its own STM32 project, exploitable on STM32Cube IDE, in the _STM32CubeIDE-project_ folder
-(I should use the `🟦 Generate Report` function in order for anyone to get the necessary information to understand what is going on.);
-- has its own Otii project, exploitable on Otii 3 software (⚠️**version 3.5.2**), to visualize the data recorded.
+Each low power mode has its own:
+* STM32 project, exploitable on STM32Cube IDE, in the _STM32CubeIDE-project_ folder. <br> I might use the `🟦 Generate Report` function in order for anyone to understand quickly what the project is about.
+* Otii project, exploitable on Otii 3 software (⚠️**version 3.5.2**), to visualize the data recorded.
 <br>
 I tried to use the same configuration in every STM32 project: clock source, clock frequency, peripherals used and their configurations, etc. <br><br>
 
@@ -34,7 +33,9 @@ Progression: 3/8
 - 🗒️ TODO: STOP2, STANDBY, Shutdown.
 
 ---
-
-A **huge** thanks to Mr. Sylvain MONTAGNY ([@SylvainMontagny](https://github.com/SylvainMontagny)), of Savoie Mont Blanc University, for his amazing work to understand the low power modes on STM32 boards.<br>
+## Credits & Sources 
+>• A **huge** thanks to Mr. Sylvain MONTAGNY ([@SylvainMontagny](https://github.com/SylvainMontagny)), of Savoie Mont Blanc University, for his amazing work to understand the low power modes on STM32 boards.<br>
 Even though I am not using the same board, it was quite simple to grasp the subtleties of implementing the necessary code. <br>
 **[Check his paper here!](https://scem-eset.univ-smb.fr/wp-content/uploads/2021/06/Mastering-Low-Power-in-STM32.pdf)** 
+
+>• STMicroelectronics' *Getting started with PWR* and low power modes [wiki page](https://wiki.st.com/stm32mcu/wiki/Getting_started_with_PWR).

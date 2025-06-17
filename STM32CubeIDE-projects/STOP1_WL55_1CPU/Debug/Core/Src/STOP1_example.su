@@ -1,0 +1,8 @@
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_pwr.h:1962:26:LL_PWR_IsActiveFlag_REGLPS	4	static
+../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_rcc.h:3035:26:LL_RCC_IsActiveFlag_HPRE	4	static
+../Core/Src/STOP1_example.c:16:5:__io_putchar	16	static
+../Core/Src/STOP1_example.c:24:6:delay	24	static,ignoring_inline_asm
+../Core/Src/STOP1_example.c:43:6:Divide_HCLK1_By	24	static
+../Core/Src/STOP1_example.c:81:6:Enter_LowPowerRunMode	8	static
+../Core/Src/STOP1_example.c:110:6:Exit_LowPowerRunMode	16	static
+../Core/Src/STOP1_example.c:128:6:Enter_STOP1Mode_OnWFI	8	static
