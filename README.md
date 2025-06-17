@@ -20,17 +20,24 @@ All there is to know for now (list of **This must ...**):
 - the board must consume the least possible;
 - a wide variety of sensor types (temperature, humidity, light intensity, etc.) must be usable with our system.
 <br><br>
+The low-power modes were treated in this order: <br>
+Sleep, LPRun, LPSleep, STOP0, STOP1, STOP2, Standby, Shutdown.
+<br><br>
 The current structure of this project is as follows.<br>
 Each low power mode has its own:
-* STM32 project, exploitable on STM32Cube IDE, in the _STM32CubeIDE-project_ folder. <br> I might use the `🟦 Generate Report` function in order for anyone to understand quickly what the project is about.
-* Otii project, exploitable on Otii 3 software (⚠️**version 3.5.2**), to visualize the data recorded.
+* STM32 project, exploitable on STM32Cube IDE, in the _STM32CubeIDE-project_ folder. <br> I might use the `🟦 Generate Report` function in order for anyone to understand quickly what the project is about.<br>
+From Sleep mode to STOP1 mode, each low power mode has:
+* an Otii project, exploitable on Otii 3 software (⚠️**version 3.5.2**), to visualize the data recorded for  current consumption.<br>
+Starting from STOP2 mode, instead of an Otii project, each low power has :
+* a Power Profiler Kit II project, exploitable on nRF Connect for Desktop from Nordic Semiconductor, also to visualize data on current consumption (a much cheaper solution). 
 <br>
 I tried to use the same configuration in every STM32 project: clock source, clock frequency, peripherals used and their configurations, etc. <br><br>
 
-Progression: 3/8 
-- ☑️ DONE: Sleep (WFI/WFE), Low Power Run, Low Power Sleep;
-- ⏳ Currently working on: STOP0, STOP1;
-- 🗒️ TODO: STOP2, STANDBY, Shutdown.
+Progression on STM32Cube IDE: 8/8 
+- ☑️ DONE: Sleep (WFI/WFE), Low Power Run, Low Power Sleep, STOP0, STOP1, STOP2, Standby, Shutdown.
+
+Progression on Arduino IDE: 
+- ⏳ Currently working on: STOP0;
 
 ---
 ## Credits & Sources 
