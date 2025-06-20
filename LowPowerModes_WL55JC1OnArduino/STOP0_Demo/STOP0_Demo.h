@@ -1,0 +1,73 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __STOP0_DEMO_H
+#define __STOP0_DEMO_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+#include "stm32wlxx_hal.h"
+
+//...
+
+/* Exported functions prototypes ---------------------------------------------*/
+void My_Error_Handler();
+
+/* USER CODE BEGIN EFP */
+
+/* USER CODE END EFP */
+
+/* Private defines -----------------------------------------------------------*/
+#define BLED_Pin GPIO_PIN_15
+#define BLED_GPIO_Port GPIOB
+#define RCC_OSC32_IN_Pin GPIO_PIN_14
+#define RCC_OSC32_IN_GPIO_Port GPIOC
+#define GLED_Pin GPIO_PIN_9
+#define GLED_GPIO_Port GPIOB
+#define RCC_OSC32_OUT_Pin GPIO_PIN_15
+#define RCC_OSC32_OUT_GPIO_Port GPIOC
+#define FE_CTRL3_Pin GPIO_PIN_3
+#define FE_CTRL3_GPIO_Port GPIOC
+#define FE_CTRL2_Pin GPIO_PIN_5
+#define FE_CTRL2_GPIO_Port GPIOC
+#define FE_CTRL1_Pin GPIO_PIN_4
+#define FE_CTRL1_GPIO_Port GPIOC
+#define UB3_Pin GPIO_PIN_6
+#define UB3_GPIO_Port GPIOC
+#define RLED_Pin GPIO_PIN_11
+#define RLED_GPIO_Port GPIOB
+#define T_VCP_RX_Pin GPIO_PIN_3
+#define T_VCP_RX_GPIO_Port GPIOA
+#define T_VCP_RXA2_Pin GPIO_PIN_2
+#define T_VCP_RXA2_GPIO_Port GPIOA
+
+/* USER CODE BEGIN Private defines */
+
+/* USER CODE END Private defines */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __STOP0_DEMO_H */
