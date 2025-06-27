@@ -17,7 +17,7 @@
   * @brief Sets up the system by calling the initialization functions :
 	* HAL_Init, SystemClock_Congif, MX_<PERIPHERAL>_Init.
   * @param None
-	* @note This function is called in the `setup` Arduino function.
+	* @note This function has to be called in the `setup` Arduino function.
   * @retval None
  */
 void System_Setup(void){

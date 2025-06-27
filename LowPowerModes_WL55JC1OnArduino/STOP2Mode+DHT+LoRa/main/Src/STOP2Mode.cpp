@@ -7,9 +7,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wlxx_hal.h"
-#include "STOP2Mode.h"
-#include "STOP2_MX_Config.h"
-#include "STOP2_SystemClock_Config.h"
+#include "Inc/STOP2Mode.h"
+#include "Inc/STOP2_MX_Config.h"
+#include "Inc/STOP2_SystemClock_Config.h"
 
 /* External variables / macros -----------------------------------------------*/
 

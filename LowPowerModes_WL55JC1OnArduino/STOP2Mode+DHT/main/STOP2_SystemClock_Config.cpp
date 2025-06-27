@@ -7,10 +7,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wlxx_hal.h"
+#include "STOP2_SystemClock_Config.h"
 #include "My_Error_Handler.h"
-#include "WSerial.h"
 
-extern HardwareSerial Serial;
 /**
   * @brief System Clock Configuration
   * @param None

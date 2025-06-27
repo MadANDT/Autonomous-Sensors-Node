@@ -17,7 +17,7 @@
   * @brief Sets up the system by calling the initialization functions :
 	* HAL_Init, SystemClock_Congif, MX_<PERIPHERAL>_Init.
   * @param None
-	* @note This function is called in the `setup` Arduino function.
+	* @note This function has to be called in the `setup` Arduino function.
   * @retval None
  */
 void System_Setup(void){
@@ -53,5 +53,50 @@ void STOP2_Exit_LEDSequence(void){
 		HAL_GPIO_TogglePin(GPIOB,  RLED_Pin);
 		HAL_Delay(200);
 	}
+}
+
+/**
+  * @brief Enter STOP2 mode for DELAY_S seconds,
+  * wake up on RTC alarm interrupt.
+  * @param delay_s: sleep duration offset in seconds
+  * @retval None
+ */
+ void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s){
+  STOP2_Entry_LEDSequence();  // Indicate the entry in STOP2 mode with the LED sequence
+  rtcAlarmFlag = false;
+  
+  // Put radio in sleep mode while retaining configuration to minimize current 
+  radio.sleep(true);
+
+  RTC_Setup(delay_s);  
+  
+  HAL_SuspendTick();          // Suspend the SysTick Increment
+
+  HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+  /* ####----####----####----####
+	 * MCU is asleep in STOP2 mode
+	 * ####----####----####----####
+	 */
+
+  HAL_ResumeTick();           // Resume the SysTick Increment
+
+  // Wake radio up (standby) after STOP2
+  radio.standby();
+
+  STOP2_Exit_LEDSequence();   // Indicate the exit in STOP2 mode with the LED sequence
+
+  // Wait for alarm flag (should be set by callback)
+  while (!rtcAlarmFlag) {
+      // Optionally, sleep or do nothing
+  }
+
+  // After wake-up
+  transmittedFlag = false;
+  radio.finishTransmit();
+  // De-initialize the RTC
+  rtc.end();
+
+  // Reset system part
+  SystemClock_Config();
 }
 

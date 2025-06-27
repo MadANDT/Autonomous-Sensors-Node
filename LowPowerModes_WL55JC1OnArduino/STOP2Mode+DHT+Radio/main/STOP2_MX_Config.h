@@ -22,3 +22,14 @@ void MX_GPIO_Init(void);
 #ifdef __cplusplus
 }
 #endif
+
+#include <STM32RTC.h>
+/* RTC related variables -----------------------------------------------------*/
+extern STM32RTC& rtc; // = STM32RTC::getInstance();
+extern volatile bool rtcAlarmFlag; // = false;
+
+void RTCAlarmCallback(void *data);
+void RTC_Setup(uint16_t delay_s);
+void 
+
+

@@ -8,9 +8,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wlxx_hal.h"
-#include "STOP2_MX_Config.h"
-#include "STOP2Mode.h"
-#include "My_Error_Handler.h"
+#include "Inc/STOP2_MX_Config.h"
+#include "Inc/STOP2Mode.h"
+#include "Inc/My_Error_Handler.h"
+
+STM32RTC& rtc = STM32RTC::getInstance();
+volatile bool rtcAlarmFlag = false;
 
 /**
   * @brief GPIO Initialization Function
@@ -60,4 +63,43 @@
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
   /* USER CODE END MX_GPIO_Init_2 */
+}
+
+/**
+  * @brief Sets up the RTC through STM32duino RTC library API and functions, 
+  * and the initial sleep duration DEALY_S.
+  * @note This function should be called in the setup loop.
+  * @param delay_s: sleep duration offset in seconds for the first set up.
+  * @retval None
+ */
+void RTC_Setup(uint16_t delay_s){
+  // rtc.setClockSource(STM32RTC::LSE_CLOCK, 127, 255);
+  // rtc.begin();
+  // rtc.attachInterrupt(RTCAlarmCallback);
+  // // Set initial time and date (optional, for demo)
+  // rtc.setTime(0, 0, 0);
+  // rtc.setDate(1, 1, 25);
+
+  uint8_t hours = rtc.getHours();
+  uint8_t minutes = rtc.getMinutes();
+  uint8_t seconds = rtc.getSeconds();
+  uint32_t subSeconds = rtc.getSubSeconds();
+
+  uint32_t newSubSeconds = subSeconds + SUBSECONDS_OFFSET;
+  uint8_t newSeconds = seconds + delay_s;
+
+  if (newSubSeconds >= 1000) { // assuming 1000 ms per second
+    newSubSeconds -= 1000;
+    newSeconds += 1;
+  }
+  if (newSeconds >= 60) {
+    newSeconds -= 60;
+    minutes += 1;
+    if (minutes >= 60) {
+        minutes = 0;
+        hours = (hours + 1) % 24;
+    }
+  }
+  rtc.setAlarmTime(hours, minutes, newSeconds, newSubSeconds);
+  rtc.enableAlarm(rtc.MATCH_HHMMSS);
 }

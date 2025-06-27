@@ -9,17 +9,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wlxx_hal.h"
-#include "STOP2Mode.h"
-#include "STOP2_SystemClock_Config.h"
-#include "STOP2_MX_Config.h"
-#include <STM32RTC.h>
+#include "Inc/STOP2Mode.h"
+#include "Inc/STOP2_SystemClock_Config.h"
+#include "Inc/STOP2_MX_Config.h"
+#include "Inc/DHT_Sensors.h"
+#include "Inc/LoRa_Modem.h"
+#include "Inc/arduino_secrets.h"
 
-#define USE_HAL_RTC_REGISTER_CALLBACKS 1
-
-/* RTC related variables -----------------------------------------------------*/
-STM32RTC& rtc = STM32RTC::getInstance();
-volatile bool rtcAlarmFlag = false;
-volatile uint16_t SLEEP_DURATION = 3;
+volatile uint16_t SLEEP_DURATION = 10;
 volatile bool sleep_increment = true; // if se to True, sleep duration increments, if False, it decrements
 
 /**
@@ -34,45 +31,6 @@ void RTCAlarmCallback(void *data) {
 }
 
 /**
-  * @brief Sets up the RTC through STM32duino RTC library API and functions, 
-  * and the initial sleep duration DEALY_S.
-  * @note This function should be called in the setup loop.
-  * @param delay_s: sleep duration offset in seconds for the first set up.
-  * @retval None
- */
-void RTC_Setup(uint16_t delay_s){
-  rtc.setClockSource(STM32RTC::LSE_CLOCK, 127, 255);
-  rtc.begin();
-  rtc.attachInterrupt(RTCAlarmCallback);
-  // Set initial time and date (optional, for demo)
-  rtc.setTime(0, 0, 0);
-  rtc.setDate(1, 1, 25);
-
-  uint8_t hours = rtc.getHours();
-  uint8_t minutes = rtc.getMinutes();
-  uint8_t seconds = rtc.getSeconds();
-  uint32_t subSeconds = rtc.getSubSeconds();
-
-  uint32_t newSubSeconds = subSeconds + SUBSECONDS_OFFSET;
-  uint8_t newSeconds = seconds + delay_s;
-
-  if (newSubSeconds >= 1000) { // assuming 1000 ms per second
-    newSubSeconds -= 1000;
-    newSeconds += 1;
-  }
-  if (newSeconds >= 60) {
-    newSeconds -= 60;
-    minutes += 1;
-    if (minutes >= 60) {
-        minutes = 0;
-        hours = (hours + 1) % 24;
-    }
-  }
-  rtc.setAlarmTime(hours, minutes, newSeconds, newSubSeconds);
-  rtc.enableAlarm(rtc.MATCH_HHMMSS);
-}
-
-/**
   * @brief Enter STOP2 mode for DELAY_S seconds,
   * wake up on RTC alarm interrupt.
   * @param delay_s: sleep duration offset in seconds
@@ -82,7 +40,7 @@ void RTC_Setup(uint16_t delay_s){
   STOP2_Entry_LEDSequence();  // Indicate the entry in STOP2 mode with the LED sequence
 
   rtcAlarmFlag = false;
-  
+
   RTC_Setup(delay_s);  
 
   HAL_SuspendTick();          // Suspend the SysTick Increment
@@ -104,27 +62,67 @@ void RTC_Setup(uint16_t delay_s){
 
   // De-initialize the RTC
   rtc.end();
+
+  // Reset system part
+  SystemClock_Config();
+  
+  // Reinitialize LoRaWAN modem after waking up 
+  Serial.println("Reinitializing LoRaWAN modem after wake-up");
+  setupLoRaWAN(); 
 }
 
 void setup() {
-  Serial.begin(9600);
-  while(!Serial);
 
   HAL_Init();
   SystemClock_Config();
   MX_GPIO_Init();
 
-  RTC_Setup(SLEEP_DURATION);
+  Serial.begin(9600);
+  while(!Serial);
 
+  Serial.println("System initialized\r\n");
+
+  //RTC_Setup(SLEEP_DURATION);
+  rtc.setClockSource(STM32RTC::LSE_CLOCK, 127, 255);
+  rtc.begin();
+  rtc.attachInterrupt(RTCAlarmCallback);
+  // Set initial time and date (optional, for demo)
+  rtc.setTime(0, 0, 0);
+  rtc.setDate(1, 1, 25);
+
+  setupSensors();  
+
+  Serial.println("DHT sensors initialized\r\n");
+
+  setupLoRaWAN();
+
+  Serial.println("RTC alarm, LoRa modem and DHT sensors initialized\r\n");
 }
 
 void loop(){
-  Serial.print("Current sleep duration required: "); Serial.print(SLEEP_DURATION); Serial.print("seconds");
+  Serial.println("Loop start / Wake-up");
+  //Read DHT sensors
+  float t_left, h_left, t_middle, h_middle, t_right, h_right;
+  readDHTSensors(t_left, h_left, t_middle, h_middle, t_right, h_right);
+
+  // Prepare data table (local, stack-allocated, minimal memory)
+  float dataTable[] = { t_left, h_left, t_middle, h_middle, t_right, h_right, SLEEP_DURATION };
+  size_t dataSize = sizeof(dataTable) / sizeof(dataTable[0]);
+  uint8_t txData[sizeof(float) * dataSize];
+
+  // Send data via LoRa
+  sendLoRaData(dataTable, dataSize);
+
+  Serial.print("Current sleep duration required: "); Serial.print(SLEEP_DURATION); Serial.print(" seconds");
   uint16_t wakeup_ticks = (uint16_t)(SLEEP_DURATION * 2048);
-  Serial.println(" → "); Serial.print(wakeup_ticks); Serial.println(" wakeup_ticks");
+  Serial.print(" → "); Serial.print(wakeup_ticks); Serial.println(" wakeup_ticks\r\n");
+
+   
+  Serial.println("Entering STOP2 mode");
+   
   Enter_STOP2Mode_WithRTCAlarm(SLEEP_DURATION);
-  
+
   // Modify sleep duration for next iteration
-  sleep_increment = (SLEEP_DURATION == 3) ? true : ((SLEEP_DURATION == 5) ? false : sleep_increment);
+  sleep_increment = (SLEEP_DURATION == 10) ? true : ((SLEEP_DURATION == 12) ? false : sleep_increment);
   SLEEP_DURATION = (sleep_increment) ? ++SLEEP_DURATION : --SLEEP_DURATION;
 }
