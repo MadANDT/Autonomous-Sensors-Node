@@ -80,8 +80,6 @@ void STOP2_Exit_LEDSequence(void);
 
 #include "Radio.h"
 extern STM32WLx_Module radio; // Radio module instance
-extern const uint32_t rfswitch_pins[];
-extern const Module::RfSwitchMode_t rfswitch_table[];
 
 void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s);
 

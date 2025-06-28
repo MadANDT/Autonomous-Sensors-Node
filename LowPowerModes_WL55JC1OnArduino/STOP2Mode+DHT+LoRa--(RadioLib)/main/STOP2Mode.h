@@ -19,9 +19,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <STM32RTC.h>
 #include "My_Error_Handler.h"
-#include "Radio.h" // RadioLib header for LoRa modem functionality
 
 /* USER CODE END Includes */
 
@@ -47,6 +45,7 @@ void My_Error_Handler(void);
 void System_Setup(void);
 void STOP2_Entry_LEDSequence(void);
 void STOP2_Exit_LEDSequence(void);
+
 //
 /* USER CODE END EFP *
 /* Private defines -----------------------------------------------------------*/
@@ -79,5 +78,10 @@ void STOP2_Exit_LEDSequence(void);
 #ifdef __cplusplus
 }
 #endif
+
+// End of the C++ guard
+void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s);
+
+extern volatile bool rtcAlarmFlag; // = false;
 
 #endif /* __STOP2MODE_H */

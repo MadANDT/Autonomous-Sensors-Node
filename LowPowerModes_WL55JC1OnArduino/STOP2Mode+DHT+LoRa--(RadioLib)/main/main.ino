@@ -14,11 +14,14 @@
 #include "STOP2_MX_Config.h"
 #include "DHT_Sensors.h"
 #include "Radio.h"
+#include <RadioLib.h>
 
 volatile uint16_t SLEEP_DURATION = 10;
 volatile bool sleep_increment = true; // if se to True, sleep duration increments, if False, it decrements
 
-/* STM32WLx radio = new STM32WLx_Module();
+volatile bool transmittedFlag = false;
+int transmissionState = RADIOLIB_ERR_NONE;
+
 static const uint32_t rfswitch_pins[] = {PC3, PC4, PC5, RADIOLIB_NC, RADIOLIB_NC};
 static const Module::RfSwitchMode_t rfswitch_table[] = {
   {STM32WLx::MODE_IDLE,  {LOW,  LOW,  LOW}},
@@ -26,10 +29,7 @@ static const Module::RfSwitchMode_t rfswitch_table[] = {
   {STM32WLx::MODE_TX_LP, {HIGH, HIGH, HIGH}},
   {STM32WLx::MODE_TX_HP, {HIGH, LOW,  HIGH}},
   END_OF_MODE_TABLE,
-}; */
-
-volatile bool transmittedFlag = false;
-int transmissionState = RADIOLIB_ERR_NONE;
+};
 
 void setFlag(void) {
   transmittedFlag = true;
@@ -44,51 +44,6 @@ void setFlag(void) {
 /*void RTCAlarmCallback(void *data) {
   UNUSED(data);
   rtcAlarmFlag = true;
-}*/
-
-/**
-  * @brief Enter STOP2 mode for DELAY_S seconds,
-  * wake up on RTC alarm interrupt.
-  * @param delay_s: sleep duration offset in seconds
-  * @retval None
- */
-/* void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s){
-  STOP2_Entry_LEDSequence();  // Indicate the entry in STOP2 mode with the LED sequence
-  rtcAlarmFlag = false;
-  
-  // Put radio in sleep mode while retaining configuration to minimize current 
-  radio.sleep(true);
-
-  RTC_Setup(delay_s);  
-  
-  HAL_SuspendTick();          // Suspend the SysTick Increment
-
-  HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
-  /* ####----####----####----####
-	 * MCU is asleep in STOP2 mode
-	 * ####----####----####----####
-	 */
-
-/*  HAL_ResumeTick();           // Resume the SysTick Increment
-
-  // Wake radio up (standby) after STOP2
-  radio.standby();
-
-  STOP2_Exit_LEDSequence();   // Indicate the exit in STOP2 mode with the LED sequence
-
-  // Wait for alarm flag (should be set by callback)
-  while (!rtcAlarmFlag) {
-      // Optionally, sleep or do nothing
-  }
-
-  // After wake-up
-  transmittedFlag = false;
-  radio.finishTransmit();
-  // De-initialize the RTC
-  rtc.end();
-
-  // Reset system part
-  SystemClock_Config();
 }*/
 
 void setup() {

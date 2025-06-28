@@ -10,6 +10,8 @@
 #include "STOP2Mode.h"
 #include "STOP2_MX_Config.h"
 #include "STOP2_SystemClock_Config.h"
+#include <STM32RTC.h>
+#include "Radio.h" // RadioLib header for LoRa modem functionality
 
 /* External variables / macros -----------------------------------------------*/
 
@@ -55,3 +57,47 @@ void STOP2_Exit_LEDSequence(void){
 	}
 }
 
+/**
+  * @brief Enter STOP2 mode for DELAY_S seconds,
+  * wake up on RTC alarm interrupt.
+  * @param delay_s: sleep duration offset in seconds
+  * @retval None
+ */
+void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s){
+  STOP2_Entry_LEDSequence();  // Indicate the entry in STOP2 mode with the LED sequence
+  rtcAlarmFlag = false;
+  
+  // Put radio in sleep mode while retaining configuration to minimize current 
+  radio.sleep(true);
+
+  RTC_Setup(delay_s);  
+  
+  HAL_SuspendTick();          // Suspend the SysTick Increment
+
+  HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+  /* ####----####----####----####
+	 * MCU is asleep in STOP2 mode
+	 * ####----####----####----####
+	 */
+
+  HAL_ResumeTick();           // Resume the SysTick Increment
+
+  // Wake radio up (standby) after STOP2
+  radio.standby();
+
+  STOP2_Exit_LEDSequence();   // Indicate the exit in STOP2 mode with the LED sequence
+
+  // Wait for alarm flag (should be set by callback)
+  while (!rtcAlarmFlag) {
+      // Optionally, sleep or do nothing
+  }
+
+  // After wake-up
+  transmittedFlag = false;
+  radio.finishTransmit();
+  // De-initialize the RTC
+  rtc.end();
+
+  // Reset system part
+  SystemClock_Config();
+}
