@@ -19,5 +19,7 @@ int sendLoRaData(float* dataTable, size_t dataSize);
 
 extern STM32WLx radio;
 extern volatile bool transmittedFlag;
+extern volatile bool receivedFlag;
+extern volatile bool enableInterrupt; 
 
 #endif // RADIO_H

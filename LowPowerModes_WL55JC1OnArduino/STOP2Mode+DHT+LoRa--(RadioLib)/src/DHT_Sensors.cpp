@@ -46,12 +46,18 @@ void readDHTSensors(float &t_left, float &h_left, float &t_middle, float &h_midd
   // Check for errors
   if (isnan(t_left) || isnan(h_left)){
     Serial.println("Sensor read error on left DHT");
+    if (isnan(t_left)) t_left = -1.0;
+    if (isnan(h_left)) h_left = -1.0; 
     My_Error_Handler();
   } if (isnan(t_middle) || isnan(h_middle)){
     Serial.println("Sensor read error on middle DHT\r\n");
+    if (isnan(t_middle)) t_middle = -1.0;
+    if (isnan(h_middle)) h_middle = -1.0; 
     My_Error_Handler();
   } if (isnan(t_right) || isnan(h_right)) {
     Serial.println("Sensor read error on right DHT\r\n");
+    if (isnan(t_right)) t_right = -1.0;
+    if (isnan(h_right)) h_right = -1.0; 
     My_Error_Handler();
   }
 }

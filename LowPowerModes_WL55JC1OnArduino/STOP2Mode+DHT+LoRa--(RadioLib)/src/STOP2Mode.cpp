@@ -63,7 +63,7 @@ void STOP2_Exit_LEDSequence(void){
   * @param delay_s: sleep duration offset in seconds
   * @retval None
  */
-void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s){
+void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s, uint8_t stop2_mode) {
   STOP2_Entry_LEDSequence();  // Indicate the entry in STOP2 mode with the LED sequence
   rtcAlarmFlag = false;
   
@@ -92,9 +92,11 @@ void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s){
       // Optionally, sleep or do nothing
   }
 
-  // After wake-up
-  transmittedFlag = false;
-  radio.finishTransmit();
+  // After wake-up, additional actions can be performed for transmitter mode
+  if (stop2_mode == STOP2_MODE_TRANSMITTER) {
+    transmittedFlag = false;
+    radio.finishTransmit();
+  }
   // De-initialize the RTC
   rtc.end();
 

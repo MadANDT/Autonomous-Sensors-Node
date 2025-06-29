@@ -1,9 +1,12 @@
- /**
+/**
   ******************************************************************************
   * @file           : main.ino
-  * @brief          : Main program body, enters STOP2 mode for a specified time -
-                      oscillating between 3 (default value), 4 and 5 seconds and 
-                      wakes up using RTC alarm.
+  * @brief          : Main program body.
+  *                   The setup initializes the system : clock, pins, radio (as 
+  *                   transmitter), RTC alarm and sensors.  
+  *                   The main loop consists of reading data sensors, sending 
+  *                   them via the LoRa Radio, entering STOP2 mode and waking up 
+  *                   on RTC internal wake-up interrupt.
   ******************************************************************************
   */
 
@@ -15,6 +18,7 @@
 #include "DHT_Sensors.h"
 #include "Radio.h"
 #include <RadioLib.h>
+#include "STM32WL_TxRx_RadioParameters.h"
 
 volatile uint16_t SLEEP_DURATION = 10;
 volatile bool sleep_increment = true; // if se to True, sleep duration increments, if False, it decrements
@@ -35,17 +39,6 @@ void setFlag(void) {
   transmittedFlag = true;
 }
 
-/**
-  * @brief RTC interrupt callback function, updates RTC alarm flag by rising it.
-  * @note This function is called after RTC fires its itnerrupt.
-  * @param data: data that may have been stored in RTC, unused by default.
-  * @retval None
- */
-/*void RTCAlarmCallback(void *data) {
-  UNUSED(data);
-  rtcAlarmFlag = true;
-}*/
-
 void setup() {
 
   HAL_Init();
@@ -55,23 +48,31 @@ void setup() {
   Serial.begin(9600);
   while(!Serial);
 
-  Serial.println("System initialized\r\n");
+  Serial.println("(#T) System initialized\r\n");
 
   RTC_Setup(SLEEP_DURATION);
 
   setupSensors();  
 
-  Serial.println("DHT sensors initialized\r\n");
+  Serial.println("(#T) DHT sensors initialized\r\n");
 
   radio.setRfSwitchTable(rfswitch_pins, rfswitch_table);
-  int state = radio.begin(868.0); // or your frequency
-  radio.setTCXO(1.7); // for Nucleo WL55JC1
+  int state = radio.begin(EU868_FREQUENCY);
+  if (state == RADIOLIB_ERR_NONE) {
+  // Parameters must match with receiver
+    radio.setSpreadingFactor(9);         // Spreading factor 9
+    radio.setBandwidth(125.0);           // 125 kHz bandwidth
+    radio.setCodingRate(7);              // Coding rate 4/7
+    radio.setSyncWord(0x12);             // Private network sync word
+    radio.setOutputPower(10);            // 10 dBm output power
+  }
+  radio.setTCXO(TCXO_VOLTAGE); // for Nucleo WL55JC1
 
-  Serial.println("RTC alarm, LoRa modem and DHT sensors initialized\r\n");
+  Serial.println("(#T) RTC alarm, LoRa modem and DHT sensors initialized\r\n");
 }
 
 void loop(){
-  Serial.println("Loop start / Wake-up");
+  Serial.println("(#T) Loop start / Wake-up");
   //Read DHT sensors
   float t_left, h_left, t_middle, h_middle, t_right, h_right;
   readDHTSensors(t_left, h_left, t_middle, h_middle, t_right, h_right);
@@ -94,9 +95,9 @@ void loop(){
   Serial.print(" → "); Serial.print(wakeup_ticks); Serial.println(" wakeup_ticks\r\n");
 
    
-  Serial.println("Entering STOP2 mode");
+  Serial.println("(#T) Entering STOP2 mode");
    
-  Enter_STOP2Mode_WithRTCAlarm(SLEEP_DURATION);
+  Enter_STOP2Mode_WithRTCAlarm(SLEEP_DURATION, STOP2_MODE_TRANSMITTER);
 
   // Modify sleep duration for next iteration
   sleep_increment = (SLEEP_DURATION == 10) ? true : ((SLEEP_DURATION == 12) ? false : sleep_increment);

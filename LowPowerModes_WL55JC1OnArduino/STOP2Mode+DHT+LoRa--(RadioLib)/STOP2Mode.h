@@ -35,7 +35,12 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+/* To differentiate between the two modes of operation 
+ * (transmitter and receiver) when entering STOP2 mode,
+ * we define a macro to indicate the mode.
+ */
+#define STOP2_MODE_TRANSMITTER 1
+#define STOP2_MODE_RECEIVER    0
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -80,8 +85,10 @@ void STOP2_Exit_LEDSequence(void);
 #endif
 
 // End of the C++ guard
-void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s);
+void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s, uint8_t stop2_mode = STOP2_MODE_RECEIVER);
 
 extern volatile bool rtcAlarmFlag; // = false;
+extern volatile bool transmittedFlag; // = false;
+extern volatile bool receivedFlag; // = false;
 
 #endif /* __STOP2MODE_H */
