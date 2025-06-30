@@ -11,14 +11,6 @@
 #include "STOP2Mode.h"
 
 STM32WLx radio = new STM32WLx_Module();
-static const uint32_t rfswitch_pins[] = {PC3, PC4, PC5, RADIOLIB_NC, RADIOLIB_NC};
-static const Module::RfSwitchMode_t rfswitch_table[] = {
-  {STM32WLx::MODE_IDLE,  {LOW,  LOW,  LOW}},
-  {STM32WLx::MODE_RX,    {HIGH, HIGH, LOW}},
-  {STM32WLx::MODE_TX_LP, {HIGH, HIGH, HIGH}},
-  {STM32WLx::MODE_TX_HP, {HIGH, LOW,  HIGH}},
-  END_OF_MODE_TABLE,
-};
 
 /**
   * @brief Sends data via LoRaWAN.

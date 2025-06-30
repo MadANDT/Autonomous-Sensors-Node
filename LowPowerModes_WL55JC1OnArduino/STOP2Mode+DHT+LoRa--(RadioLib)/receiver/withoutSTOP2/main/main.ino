@@ -44,6 +44,22 @@ void setFlag(void) {
   receivedFlag = true;
 }
 
+// Estimate distance using signal RSSI
+float calculateDistance(float txPower, float rssi, float n = 4.3, float C = 44) {
+  // Log-distance path loss model
+  /* according to environment,
+  • n range     : 2.0 (free space), 2.7 - 3.5 (urban, line-of-sight),
+                  3.0 - 5.0 (indoor, obstacles), 4.0 - 6.0 (dense urban/forest)
+  • C constant  : 20 dB (free space), 30 dB (urban, line-of-sight),
+                  40 dB (indoor, obstacles), 45 dB (dense urban/forest) */
+  // Example : if receiver is inside a building and transmitter outside, n ∈ [3.3 ; 3.8] and C ∈ [35 ; 45] dB.
+  // Experiment 1 : receiver and transmitter in the same room, 
+  //                separated by ~8 meters ; set n to 2.97 and C to 44 → approximation between 8.1 and 9.4 m. 
+  // Experiment 2 : receiver inside building (thick walls) and transmitter outside, set n to 4.3 and left C to 44
+  float exponent = (txPower - rssi - C) / (10 * n);
+  return pow(10, exponent); // Distance in meters
+}
+
 void setup() {
 
   HAL_Init();
@@ -68,21 +84,24 @@ void setup() {
   Serial.println("SUCCESS!");
 
   // Match transmitter parameters
-  radio.setSpreadingFactor(SPREADING_FACTOR);
-  radio.setBandwidth(BANDWIDTH);
-  radio.setCodingRate(CODING_RATE);
+  radio.setSpreadingFactor(SF_LONG_RANGE);
+  radio.setBandwidth(BW_LONG_RANGE);
+  radio.setCodingRate(CR_HIGH);
   radio.setSyncWord(SYNC_WORD);
-  radio.setOutputPower(OUTPUT_POWER);
+  radio.setOutputPower(OP_MAX_RANGE);
   radio.setTCXO(TCXO_VOLTAGE);
 
   // Configure interrupt
   radio.setDio1Action(setFlag);
-  radio.standby();
+  // radio.standby();
 
   Serial.println("Listening for LoRa packets...");
+  radio.startReceive();
 }
 
 void loop() {
+  float rssi = 1;
+  float snr = 1;
   // Check if packet received
   if (receivedFlag) {
     // Clear flag immediately
@@ -110,11 +129,13 @@ void loop() {
       Serial.print("Sleep Duration: ");
       Serial.print(receivedData[6]); Serial.println("s");
       
+      rssi = radio.getRSSI();
+      snr = radio.getSNR();
       // Print signal quality
       Serial.print("RSSI: ");
-      Serial.print(radio.getRSSI());
+      Serial.print(rssi);
       Serial.print(" dBm, SNR: ");
-      Serial.print(radio.getSNR());
+      Serial.print(snr);
       Serial.println(" dB");
     } else if (state == RADIOLIB_ERR_CRC_MISMATCH) {
       Serial.println("CRC error! Packet corrupted");
@@ -122,6 +143,14 @@ void loop() {
       Serial.print("Reception failed: ");
       Serial.println(state);
     }
+
+    // Estimate distance Tx ↔ Rx
+    // float rssi = radio.getRSSI();
+    // float snr = radio.getSNR();
+    float txPower = OP_MAX_RANGE; // dBm (match your transmitter's setting)
+  
+    float distance = calculateDistance(txPower, rssi);
+    Serial.print("\tEstimated Distance: ~"); Serial.print(distance); Serial.println(" m");
 
     // Restart listening
     radio.startReceive();

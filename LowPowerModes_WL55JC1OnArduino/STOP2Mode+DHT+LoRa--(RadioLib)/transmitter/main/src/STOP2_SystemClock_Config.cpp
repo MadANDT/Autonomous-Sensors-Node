@@ -39,7 +39,6 @@ extern "C" void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Serial.println("\t\t# Bloqued @CPU-AHB-APB buses clocks\r\n");
     My_Error_Handler();
   }
 
@@ -56,7 +55,6 @@ extern "C" void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
-    Serial.println("\t\t# Bloqued @SYSCLKSource-HCLK-PCLK1-PCLK2 clocks dividers\r\n");
     My_Error_Handler();
   }
 }

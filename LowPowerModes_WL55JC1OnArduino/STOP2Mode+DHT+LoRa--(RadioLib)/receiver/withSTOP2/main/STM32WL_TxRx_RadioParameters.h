@@ -11,11 +11,23 @@
   ******************************************************************************
   */
 
-/* Define of parameters -------------------------------------*/
-#define EU868_FREQUENCY     868.0   // Frequency in MHz for EU868 band
-#define SPREADING_FACTOR    7       // Spreading factor (SF) for LoRa modulation
-#define BANDWIDTH           125.0   // Bandwidth in kHz for LoRa modulation
-#define CODING_RATE         7       // Coding rate for LoRa modulation (CR = 4/7)
-#define SYNC_WORD           0x12    // Synchronization word for LoRa communication
-#define OUTPUT_POWER        10      // Output power in dBm for transmission
-#define TCXO_VOLTAGE        1.7     // TCXO voltage in volts (for Nucleo WL55JC1)
+#include <RadioLib.h>
+
+/* Defines of parameters for LoRa modulation ---------------------------------*/
+#define EU868_FREQUENCY       868.0                           // Frequency in MHz for EU868 band
+//// Spreading factor (SF) 
+/**/ #define SF_MEDIUM_RANGE  7
+/**/ #define SF_LONG_RANGE    12
+//// Bandwidth (BW)
+/**/ #define BW_SHORT_RANGE   RADIOLIB_SX126X_LORA_BW_500_0   // 500.0 kHz, slower data rate.
+/**/ #define BW_LONG_RANGE    RADIOLIB_SX126X_LORA_BW_125_0   // 125.0 kHz, sweet spot for range vs. speed.
+//// Coding rate (CR) 
+/**/ #define CR_HIGH          RADIOLIB_SX126X_LORA_CR_4_8     // 4/8, more reliable at long range, in noisy environments
+/**/ #define CR_LOW           RADIOLIB_SX126X_LORA_CR_4_5     // 4/5, for short range, high-speed links
+//// Output power (OP)
+/**/ #define OP_MAX_RANGE     20                              // 20-22 dBm : maximum range
+/**/ #define OP_BAT_OPT       10                              // 10-14 dBm : battery optimization
+//// Synchronisation word, for LoRa communication 
+#define SYNC_WORD             0x12    
+//// TCXO voltage in volts (for Nucleo WL55JC1)
+#define TCXO_VOLTAGE          1.7
