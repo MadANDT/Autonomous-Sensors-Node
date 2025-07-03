@@ -67,9 +67,14 @@ void Enter_STOP2Mode_WithRTCAlarm(uint16_t delay_s, uint8_t stop2_mode) {
   STOP2_Entry_LEDSequence();  // Indicate the entry in STOP2 mode with the LED sequence
   rtcAlarmFlag = false;
   
-  // Put radio in sleep mode while retaining configuration to minimize current 
-  radio.sleep(true);
-
+  if (stop2_mode == STOP2_MODE_TRANSMITTER){
+    // Put radio in sleep mode while retaining configuration to minimize current 
+    radio.sleep(true);
+  } else if (stop2_mode == STOP2_MODE_RECEIVER) {
+    // Put radio in receive mode to prepare for receiving packets
+    radio.startReceive();
+  } 
+  
   RTC_Setup(delay_s);  
   
   HAL_SuspendTick();          // Suspend the SysTick Increment

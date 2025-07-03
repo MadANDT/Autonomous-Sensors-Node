@@ -113,4 +113,5 @@ void RTC_Setup(uint16_t delay_s){
 void RTCAlarmCallback(void *data) {
   UNUSED(data);
   rtcAlarmFlag = true;
+  wakeFromRTC = true;
 }

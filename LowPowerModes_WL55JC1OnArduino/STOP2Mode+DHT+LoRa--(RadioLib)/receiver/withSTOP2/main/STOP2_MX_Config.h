@@ -27,6 +27,7 @@ void MX_GPIO_Init(void);
 /* RTC related variables -----------------------------------------------------*/
 extern STM32RTC& rtc; // = STM32RTC::getInstance();
 extern volatile bool rtcAlarmFlag; // = false;
+extern volatile bool wakeFromRTC;
 
 void RTCAlarmCallback(void *data);
 void RTC_Setup(uint16_t delay_s);

@@ -35,108 +35,153 @@ static const Module::RfSwitchMode_t rfswitch_table[] = {
 // Transmition/Reception flag and data storage
 volatile bool transmittedFlag = false;
 volatile bool receivedFlag = false;
+volatile bool wakeFromRTC = false;
+volatile bool wakeFromRadio = false;
 float receivedData[7];  // Stores t_left, h_left, t_middle, h_middle, t_right, h_right, sleep_duration
 
-// Timing parameters
-const uint16_t LISTEN_INTERVAL = 8;  // Wake up every 8 seconds to listen
-const uint16_t LISTEN_DURATION = 1;  // Listen for 1 second
+// Timing parameters, ⚠️ Receiver must avoid listening when Transmitter is sleeping !
+const uint16_t LISTEN_INTERVAL = 10;  // Wake up every 4 seconds to listen
+const uint16_t LISTEN_DURATION = 3;  // Listen for 10 second
 
 // ISR for packet reception
 void setFlag(void) {
   receivedFlag = true;
+  wakeFromRadio = true;
 }
 
 void setup() {
-
+  // System initialization
   HAL_Init();
   SystemClock_Config();
   MX_GPIO_Init();
-
+  // Serial initialization
   Serial.begin(9600);
   while (!Serial)
     ;
 
   Serial.println("(#R) System initialized\r\n");
 
+  // RTC peripheral initialization
   RTC_Setup(LISTEN_INTERVAL);
 
   // Configure radio
   radio.setRfSwitchTable(rfswitch_pins, rfswitch_table);
 
   Serial.print("[STM32WL] Initializing... ");
+  
   if (radio.begin(EU868_FREQUENCY) != RADIOLIB_ERR_NONE) {
     Serial.println("FAILED!");
     while (true)
       ;
   }
-  Serial.println("SUCCESS!");
-
   // Match transmitter parameters
-  radio.setSpreadingFactor(SPREADING_FACTOR);
-  radio.setBandwidth(BANDWIDTH);
-  radio.setCodingRate(CODING_RATE);
+  radio.setSpreadingFactor(SF_LONG_RANGE);
+  radio.setBandwidth(BW_LONG_RANGE);
+  radio.setCodingRate(CR_HIGH);
   radio.setSyncWord(SYNC_WORD);
-  radio.setOutputPower(OUTPUT_POWER);
+  radio.setOutputPower(OP_MAX_RANGE);
+  radio.setTCXO(TCXO_VOLTAGE);
+
+  Serial.println("SUCCESS!");
   radio.setTCXO(TCXO_VOLTAGE);
 
   // Configure interrupt
   radio.setDio1Action(setFlag);
-  radio.standby();
+  radio.setPacketReceivedAction(setFlag);
+  // radio.standby();
 
   Serial.println("Listening for LoRa packets...");
+  radio.startReceive();
 }
 
 void loop() {
-  // Enter STOP2 mode (wakes on RTC alarm)
-  Enter_STOP2Mode_WithRTCAlarm(LISTEN_INTERVAL, STOP2_MODE_RECEIVER);
-
-  // After wakeup from RTC alarm
-  Serial.println("Woke on RTC alarm - Starting listen");
-
-  // Start listening for packets
+  // Start listening for packets before STOP2
   radio.startReceive();
-  uint32_t listenStart = millis();
 
-  // Listen for specified duration
+  // Enter STOP2 mode (can wake on RTC alarm or radio interrupt)
+  Enter_STOP2Mode_WithRTCAlarm(LISTEN_INTERVAL, STOP2_MODE_RECEIVER);
+  // Determine wake-up source and handle accordingly
+  if (wakeFromRadio) {
+    wakeFromRadio = false;
+    handleRadioPacket();
+  }
+  else if (wakeFromRTC) {
+    wakeFromRTC = false;
+    handlePeriodicListen();
+  }
+}
+
+void handleRadioPacket() {
+  // Packet received while in STOP2 mode
+  Serial.println("Woke on LoRa packet reception!");
+  
+  // Read received data
+  uint8_t rxBuffer[28];  // 7 floats * 4 bytes
+  int state = radio.readData(rxBuffer, 28);
+
+  if (state == RADIOLIB_ERR_NONE) {
+    memcpy(receivedData, rxBuffer, sizeof(receivedData));
+    processReceivedData();
+  } else {
+    Serial.print("Packet receive failed, code: ");
+    Serial.println(state);
+  }
+
+  // Restart listening
+  radio.startReceive();
+}
+
+void handlePeriodicListen() {
+  // Woke from RTC alarm (periodic listen)
+  Serial.println("Woke on RTC alarm - Listening for LoRa packets");
+  
+  uint32_t listenStart = millis();
+  bool packetReceived = false;
+
+  // Active listening for specified duration
   while ((millis() - listenStart) < (LISTEN_DURATION * 1000)) {
     if (receivedFlag) {
       receivedFlag = false;
-
-      // Read received data
-      uint8_t rxBuffer[28];  // 7 floats * 4 bytes
+      packetReceived = true;
+      
+      uint8_t rxBuffer[28];
       int state = radio.readData(rxBuffer, 28);
 
       if (state == RADIOLIB_ERR_NONE) {
         memcpy(receivedData, rxBuffer, sizeof(receivedData));
-
-        // Process received data
-        Serial.println("\nReceived Sensor Data:");
-        Serial.print("Left: ");
-        Serial.print(receivedData[0]);
-        Serial.print("°C, ");
-        Serial.print(receivedData[1]);
-        Serial.println("% RH");
-        Serial.print("Middle: ");
-        Serial.print(receivedData[2]);
-        Serial.print("°C, ");
-        Serial.print(receivedData[3]);
-        Serial.println("% RH");
-        Serial.print("Right: ");
-        Serial.print(receivedData[4]);
-        Serial.print("°C, ");
-        Serial.print(receivedData[5]);
-        Serial.println("% RH");
-        Serial.print("Sleep Duration: ");
-        Serial.print(receivedData[6]);
-        Serial.println("s");
-
-        // Exit listen loop early since we got data
-        break;
+        processReceivedData();
+        break;  // Exit early if packet received
       }
     }
   }
 
-  // Return radio to standby
+  if (!packetReceived) {
+    Serial.println("No packets received during listen window");
+  }
+
+  // Return to standby and prepare for STOP2
   radio.standby();
-  Serial.println("Listen period ended - Returning to STOP2");
+}
+
+
+void processReceivedData() {
+  Serial.println("\nReceived Sensor Data:");
+  Serial.print("Left: ");
+  Serial.print(receivedData[0]);
+  Serial.print("°C, ");
+  Serial.print(receivedData[1]);
+  Serial.println("% RH");
+  Serial.print("Middle: ");
+  Serial.print(receivedData[2]);
+  Serial.print("°C, ");
+  Serial.print(receivedData[3]);
+  Serial.println("% RH");
+  Serial.print("Right: ");
+  Serial.print(receivedData[4]);
+  Serial.print("°C, ");
+  Serial.print(receivedData[5]);
+  Serial.println("% RH");
+  Serial.print("Sleep Duration: ");
+  Serial.print(receivedData[6]);
+  Serial.println("s");
 }
