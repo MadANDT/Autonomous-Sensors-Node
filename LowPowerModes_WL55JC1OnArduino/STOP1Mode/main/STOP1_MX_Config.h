@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file           : STOP1_MX_Config.h
-  * @brief          : Header for STOP2_MX_Config.cpp file.
+  * @brief          : Header for STOP1_MX_Config.cpp file.
   *                   This file declares the necessary functions for the peripherals 
   *                   configuration (RTC, GPIO here) made by CubeMX.
   ******************************************************************************

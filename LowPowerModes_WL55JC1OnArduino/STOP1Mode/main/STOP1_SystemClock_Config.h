@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file           : STOP1_SystemClock_Config.h
-  * @brief          : Header for STOP2_SystemClock_Config.cpp file.
+  * @brief          : Header for STOP1_SystemClock_Config.cpp file.
   *                   This file declares the necessary functions for the system 
   *                   clock configuration.
   ******************************************************************************
