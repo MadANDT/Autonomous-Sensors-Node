@@ -94,9 +94,9 @@ void Enter_STOP0Mode_OnWFE(void){
 	EXTI -> PR1 |= (1 << 16); // bit 16
 	EXTI -> PR1 |= (0xFFFF << 0); // bits 15 to 0
 	// EXTI_PR2 - 4 bits: 13, 9, 8, 2.
-	EXTI -> PR1 |= (1 << 13); // bit 13
-	EXTI -> PR1 |= (3 << 8); // bits 9 & 8
-	EXTI -> PR1 |= (1 << 2); // bit 2
+	EXTI -> PR2 |= (1 << 13); // bit 13
+	EXTI -> PR2 |= (3 << 8); // bits 9 & 8
+	EXTI -> PR2 |= (1 << 2); // bit 2
 
 	// Wait a bit before entering STOP0 mode
 	HAL_Delay(1000);
