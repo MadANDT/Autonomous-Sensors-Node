@@ -122,6 +122,9 @@ void RTC_setup(uint16_t delay_s){
   while (!rtcAlarmFlag) {
       // Optionally, sleep or do nothing
   }
+
+  // De-initialize the RTC
+  rtc.end();
 }
 
 void setup() {

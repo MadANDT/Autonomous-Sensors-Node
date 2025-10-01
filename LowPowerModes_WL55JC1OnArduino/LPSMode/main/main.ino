@@ -121,6 +121,8 @@ void RTC_setup(uint16_t delay_s){
   Exit_LowPowerSleepMode(); // Exit LPS mode
   // SystemClock_Config();    // Uncomment to reset System clock configuration -- IF NECESSARY
 
+  // De-initialize the RTC -- if NECESSARY
+  rtc.end();
 }
 
 void setup() {
