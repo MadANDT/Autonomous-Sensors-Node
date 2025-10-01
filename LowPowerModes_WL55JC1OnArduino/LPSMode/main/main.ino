@@ -134,5 +134,10 @@ void setup() {
 }
 
 void loop(){
+  // #### #### #### ####
+  /* Insert other actions here. */
+  
+  // #### #### #### ####
+
   Enter_LPSMode_WithRTCAlarm(SLEEP_DURATION);
 }
