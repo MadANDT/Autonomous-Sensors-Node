@@ -80,4 +80,4 @@ void Exit_LowPowerRunMode(uint8_t new_HCLKFreq = 1);
 }
 #endif
 
-#endif /* __STOP1MODE_H */
+#endif /* __LPRMODE_H */
