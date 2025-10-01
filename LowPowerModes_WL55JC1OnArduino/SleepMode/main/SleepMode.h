@@ -77,4 +77,4 @@ void Sleep_Exit_LEDSequence(void);
 }
 #endif
 
-#endif /* __STOP1MODE_H */
+#endif /* __SLEEPMODE_H */
