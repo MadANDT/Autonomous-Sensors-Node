@@ -20,7 +20,7 @@ extern "C" {
 //extern RTC_HandleTypeDef hrtc;
 
 void MX_GPIO_Init(void);
-void MX_RTC_Init(void);
+// void MX_RTC_Init(void);  // * We use the RTC configuration of STM32duino
 
 #ifdef __cplusplus
 }
