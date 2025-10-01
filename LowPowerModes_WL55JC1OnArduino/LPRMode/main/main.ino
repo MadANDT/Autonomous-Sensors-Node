@@ -116,8 +116,8 @@ void RTC_setup(uint16_t delay_s){
       // Optionally, sleep or do nothing
   }
 
-  // SystemClock_Config();    // Uncomment to reset System clock configuration -- IF NECESSARY
   Exit_LowPowerRunMode(); // Exit LPR mode
+  // SystemClock_Config();    // Uncomment to reset System clock configuration -- IF NECESSARY
 
 }
 
