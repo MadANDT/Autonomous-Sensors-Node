@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file           : STOP1Mode.cpp
+  * @file           : SleepMode.cpp
   * @brief          : This file provides code for the application demonstration.
   ******************************************************************************
   */
@@ -29,7 +29,7 @@ void System_Setup(void){
 }
 
 /**
-  * @brief LED sequence when entering STOP1 mode.
+  * @brief LED sequence when entering Sleep mode.
   * Blue and red LEDs blink three times quickly.
   * @param None
   * @retval None
@@ -43,7 +43,7 @@ void Sleep_Entry_LEDSequence(void){
 }
 
 /**
-  * @brief LED sequence when exiting STOP1 mode.
+  * @brief LED sequence when exiting Sleep mode.
   * Blue and red LEDs blink three times slowly.
   * @param None
   * @retval None
